@@ -19,6 +19,7 @@ package org.apache.jackrabbit.oak.query.fulltext;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
@@ -244,11 +245,42 @@ public class SimpleExcerptProvider {
                 } else {
                     endIndex = text.length();
                 }
+            } else {
+                if ( !isCompleteWord(text, token, index, endIndex)) {
+                    index = endIndex;
+                }
             }
             while (index < endIndex) {
                 highlightBits.set(index++);
             }
         }
+    }
+
+    private static boolean isCompleteWord(String text, String token, int startIndex, int endIndex) {
+        String regex = null;
+        String subText = null;
+
+        if (endIndex > text.length()) {
+            endIndex = text.length();
+        }
+        if (endIndex == text.length()) {
+            regex = token;
+        } else {
+            regex = token + "[\\W]";
+            endIndex = endIndex +1;
+        }
+        if (startIndex == 0) {
+            subText = text.substring(startIndex, endIndex);
+        } else {
+            subText = text.substring(startIndex - 1, endIndex);
+            regex = "[\\W]" + regex;
+
+        }
+
+        if (regex == null || subText == null) {
+            return false;
+        }
+        return Pattern.matches(regex, subText);
     }
 
     public static PropertyValue getExcerpt(PropertyValue value) {

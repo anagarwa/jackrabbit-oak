@@ -59,6 +59,23 @@ public class SimpleExcerptProviderTest {
         }
     }
 
+    @Test
+    public void hightlightCompleteWordOnly() throws Exception {
+
+        assertEquals("<div><span>official conflict <strong>of</strong> interest</span></div>",
+                highlight(sb("official conflict of interest"), of("of")));
+
+        assertEquals("<div><span><strong>of</strong> to new city</span></div>",
+                highlight(sb("of to new city"), of("of")));
+
+        assertEquals("<div><span>out <strong>of</strong> the roof</span></div>",
+                highlight(sb("out of the roof"), of("of")));
+
+        assertEquals("<div><span>well this is <strong>of</strong></span></div>",
+                highlight(sb("well this is of"), of("of")));
+
+    }
+
     private static String randomString(Random r, String set) {
         int len = r.nextInt(10);
         StringBuilder buff = new StringBuilder();
